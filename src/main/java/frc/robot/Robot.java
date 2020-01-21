@@ -31,8 +31,6 @@ public class Robot extends TimedRobot {
       DriveTrain.arcadeDriveWithJoystick();
     }
 
-    
-
   }
 
   @Override

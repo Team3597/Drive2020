@@ -19,7 +19,7 @@ public class DriveTrain {
   private static boolean toggleSlowSpeed = true;
 
   private static boolean toggleInverse = true;
-  private static float inverted = 1;
+  private static float inverted = -1;
 
 public DriveTrain() {
 

@@ -80,7 +80,7 @@ public class IO {
                 DriveTrain.toggleInverseDrive();
                 break;
             case X_BUTTON:
-                MixedAuto.align();
+                MixedAuto.align(4f);
                 break;
             case Y_BUTTON:
                 
