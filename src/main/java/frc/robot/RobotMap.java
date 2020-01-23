@@ -29,4 +29,7 @@ public class RobotMap {
 
     //Ultrasonic
     public static final int ULTRASONIC_ANALOG_PORT = 1;
+
+    //Color MixedAuto
+    public static final int COLOR_MOTOR_PORT = 10;
 }

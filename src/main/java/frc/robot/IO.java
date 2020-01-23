@@ -83,7 +83,7 @@ public class IO {
                 MixedAuto.align(4f);
                 break;
             case Y_BUTTON:
-                
+                MixedAuto.spinWheel(4);
                 break;
             default:
                 DriveTrain.stop();
