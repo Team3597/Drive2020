@@ -38,7 +38,7 @@ public class IO {
         shootJoystick = new Joystick(SHOOT_JOYSTICK_PORT);
     }
 
-    private static int buttonPressed(Joystick pJoystick) {
+    public static int buttonPressed(Joystick pJoystick) {
         
         if(pJoystick.getRawButton(A_BUTTON)) {
             return A_BUTTON;
@@ -74,30 +74,10 @@ public class IO {
     public static void driveButtonsPressed() {              //DRIVE CONTROLLER
         switch (buttonPressed(IO.driveJoystick)) {
             case A_BUTTON:
-                DriveTrain.toggleSlowSpeed();
+                Robot.limeLight.limeLightSetPipeline(0);
                 break;
             case B_BUTTON:
-                DriveTrain.toggleInverseDrive();
-                break;
-            case X_BUTTON:
-                MixedAuto.align();
-                break;
-            case Y_BUTTON:
-                
-                break;
-            default:
-                DriveTrain.stop();
-                MixedAuto.stop();
-        }
-    }
-
-    public static void shootButtonsPressed() {              //SHOOT CONTROLLER
-        switch (buttonPressed(IO.shootJoystick)) {
-            case A_BUTTON:
-                
-                break;
-            case B_BUTTON:
-                
+                Robot.limeLight.limeLightSetPipeline(1);
                 break;
             case X_BUTTON:
                 
@@ -106,10 +86,35 @@ public class IO {
                 
                 break;
             case LB_BUTTON:
-                Shooter.intake();
+
                 break;
             case RB_BUTTON:
-                Shooter.shoot(45f);
+                
+                break;
+            default:
+                Shooter.stop();
+        }
+    }
+
+    public static void shootButtonsPressed() {              //SHOOT CONTROLLER
+        switch (buttonPressed(IO.shootJoystick)) {
+            case A_BUTTON:
+                Shooter.runShooterMotors();
+                break;
+            case B_BUTTON:
+                Shooter.runHopperMotors();
+                break;
+            case X_BUTTON:
+                Shooter.changeShooterSpeed(0.05f);
+                break;
+            case Y_BUTTON:
+                Shooter.changeShooterSpeed(-0.05f);
+                break;
+            case LB_BUTTON:
+                System.out.println(Laser.getDistance());
+                break;
+            case RB_BUTTON:
+                System.out.println(Shooter.shootSpeed);
                 break;
             case R_TRIGGER_BUTTON:
                 

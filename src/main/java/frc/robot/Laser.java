@@ -8,7 +8,7 @@ public class Laser {
 
     private static final int CALIBRATION_OFFSET = -5;
 
-    private Counter counter;
+    private static Counter counter;
 
     public Laser () {
         DigitalSource source = new DigitalInput(RobotMap.LASER_DIO_PORT);
@@ -18,14 +18,14 @@ public class Laser {
         counter.reset();
     }
 
-    public double getDistance() {
+    public static double getDistance() {
         double cm;
         
         cm = (counter.getPeriod() * 1000000f / 10f) + CALIBRATION_OFFSET;
         return cm;
     }
 
-    public double getDistOnAngle(float angle) {
+    public static double getDistOnAngle(float angle) {
         return getDistance() * Math.cos(angle);
     }
 }

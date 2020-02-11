@@ -29,9 +29,7 @@ public class Robot extends TimedRobot {
 
     if(DriveTrain.drive) {
       DriveTrain.arcadeDriveWithJoystick();
-    }
-
-    
+  }
 
   }
 
@@ -41,16 +39,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-
     IO.driveButtonsPressed();
-    IO.shootButtonsPressed();
+    //IO.shootButtonsPressed();
 
-    if(DriveTrain.drive) {
-      DriveTrain.arcadeDriveWithJoystick();
-    }
-
-    ColorSensor.findColor();
-
+    DriveTrain.driveWithTriggers();
+    /*Shooter.setHopperMotors((float)IO.driveJoystick.getRawAxis(IO.RY_STICK_AXIS));
+    Shooter.setShootMotors((float)IO.driveJoystick.getRawAxis(IO.LY_STICK_AXIS));*/
   }
 
   @Override

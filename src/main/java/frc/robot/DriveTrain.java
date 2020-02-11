@@ -1,6 +1,8 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -8,8 +10,10 @@ public class DriveTrain {
 
   private static DifferentialDrive driveTrain;
 
-  private static WPI_VictorSPX rightDrive;
-  private static WPI_VictorSPX leftDrive;
+  /*private static CANSparkMax rightDrive;
+  private static CANSparkMax leftDrive;*/
+  private static WPI_TalonSRX rightDrive;
+  private static WPI_TalonSRX leftDrive;
 
   private static float speed;
   private static final float DEFAULT_SPEED = 0.9f;
@@ -18,17 +22,17 @@ public class DriveTrain {
   public static boolean drive;
   private static boolean toggleSlowSpeed = true;
 
-  private static boolean toggleInverse = true;
-  private static float inverted = 1;
-
 public DriveTrain() {
 
-  rightDrive = new WPI_VictorSPX(RobotMap.DRIVE_R_MOTOR_PORT);
-  leftDrive = new WPI_VictorSPX(RobotMap.DRIVE_L_MOTOR_PORT);
+  /*rightDrive = new CANSparkMax(RobotMap.DRIVE_R_MOTOR_PORT, MotorType.kBrushless);
+  leftDrive = new CANSparkMax(RobotMap.DRIVE_L_MOTOR_PORT, MotorType.kBrushless);*/
+  rightDrive = new WPI_TalonSRX(RobotMap.DRIVE_R_MOTOR_PORT);
+  leftDrive = new WPI_TalonSRX(RobotMap.DRIVE_L_MOTOR_PORT);
 
   //Add motor inverted
 
   driveTrain = new DifferentialDrive(leftDrive, rightDrive);
+  
 
   drive = true;
 
@@ -45,7 +49,7 @@ public static void driveTank(float pLeftSpeed, float pRightSpeed) {
 
 public static void arcadeDriveWithJoystick() {
   if(drive) {
-    float forward = (float) (IO.driveJoystick.getRawAxis(IO.RY_STICK_AXIS) * speed * inverted);
+    float forward = (float) (IO.driveJoystick.getRawAxis(IO.RY_STICK_AXIS) * speed);
     float turn = (float) (IO.driveJoystick.getRawAxis(IO.LX_STICK_AXIS) * speed);
 
     driveArcade(turn, forward);
@@ -54,10 +58,43 @@ public static void arcadeDriveWithJoystick() {
 
 public static void tankDriveWithJoystick() {
   if(drive) {
-    float forward = (float) (IO.driveJoystick.getRawAxis(IO.LY_STICK_AXIS) * speed * inverted);
-    float turn = (float) (IO.driveJoystick.getRawAxis(IO.RX_STICK_AXIS) * speed * inverted);
+    float forward = (float) (IO.driveJoystick.getRawAxis(IO.LY_STICK_AXIS) * speed);
+    float turn = (float) (IO.driveJoystick.getRawAxis(IO.RX_STICK_AXIS) * speed);
 
     driveTank(turn, forward);
+  }
+}
+
+public static void rocketLeagueDrive() {
+  if(drive) {
+    float forward = 0f;
+
+    if(IO.buttonPressed(IO.driveJoystick) == IO.L_TRIGGER_BUTTON) {
+      forward = speed;
+    } else if(IO.buttonPressed(IO.driveJoystick) == IO.R_TRIGGER_BUTTON) {
+      forward = -speed;
+    }
+
+    float turn = (float) (IO.driveJoystick.getRawAxis(IO.LX_STICK_AXIS));
+
+    driveArcade(turn, forward);
+  }
+}
+
+public static void driveWithTriggers() {
+  if (drive) {
+    float forward = 0f;
+
+    if(IO.buttonPressed(IO.driveJoystick) == IO.L_TRIGGER_BUTTON) {
+      forward = speed * (float)(IO.driveJoystick.getRawAxis(IO.L_TRIGGER_AXIS));
+    } else if(IO.buttonPressed(IO.driveJoystick) == IO.R_TRIGGER_BUTTON) {
+      forward = -speed * (float)(IO.driveJoystick.getRawAxis(IO.R_TRIGGER_AXIS));
+    }
+
+    float turn = (float) (IO.driveJoystick.getRawAxis(IO.LX_STICK_AXIS));
+
+    driveArcade(turn, forward);
+
   }
 }
 
@@ -73,22 +110,8 @@ public static void toggleSlowSpeed() {
   }
 }
 
-public static void toggleInverseDrive(){
-  if(toggleInverse){
-    toggleInverse = false;
-
-    if(inverted == 1){
-      inverted = -1;
-    }
-    else{
-      inverted = 1;
-    }
-  }
-}
-
 public static void stop() {
   toggleSlowSpeed = true;
-  toggleInverse = true;
 }
 
 }

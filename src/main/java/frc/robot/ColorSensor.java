@@ -45,7 +45,6 @@ public class ColorSensor {
       }
 
       SmartDashboard.putString("Detected Color", colorString);
-      System.out.println(colorString);
 
       return colorString;
     }
