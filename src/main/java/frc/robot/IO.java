@@ -74,10 +74,10 @@ public class IO {
     public static void driveButtonsPressed() {              //DRIVE CONTROLLER
         switch (buttonPressed(IO.driveJoystick)) {
             case A_BUTTON:
-                Robot.limeLight.limeLightSetPipeline(0);
+                MixedAuto.align();
                 break;
             case B_BUTTON:
-                Robot.limeLight.limeLightSetPipeline(1);
+                Shooter.intake();
                 break;
             case X_BUTTON:
                 
@@ -93,22 +93,26 @@ public class IO {
                 break;
             default:
                 Shooter.stop();
+                MixedAuto.stop();
         }
     }
 
     public static void shootButtonsPressed() {              //SHOOT CONTROLLER
         switch (buttonPressed(IO.shootJoystick)) {
             case A_BUTTON:
-                Shooter.runShooterMotors();
+                // Shooter.setShooterMotors((float)(Shooter.findShootSpeed()));
+                // System.out.println(Shooter.findShootSpeed());
+                // Shooter.runHopperMotors();
+                Shooter.shoot();
                 break;
             case B_BUTTON:
                 Shooter.runHopperMotors();
                 break;
             case X_BUTTON:
-                Shooter.changeShooterSpeed(0.05f);
+                Shooter.changeShooterSpeed(0.01f);
                 break;
             case Y_BUTTON:
-                Shooter.changeShooterSpeed(-0.05f);
+                Shooter.changeShooterSpeed(-0.01f);
                 break;
             case LB_BUTTON:
                 System.out.println(Laser.getDistance());
@@ -129,13 +133,12 @@ public class IO {
                 
                 break;
             case START_BUTTON:
-                
+                System.out.println(Shooter.getPot());
                 break;
             case PAD:
                 
                 break;
             default:
-                Shooter.stop();
           }
     }
 }

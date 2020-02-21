@@ -6,37 +6,37 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class LimeLight {
 
-    private NetworkTable limeLightTable;
+    private static NetworkTable limeLightTable;
 
     public LimeLight() {
         limeLightTable = NetworkTableInstance.getDefault().getTable("limelight");
     }
 
-    public float limeLightGetX() {
+    public static float limeLightGetX() {
         NetworkTableEntry tx = limeLightTable.getEntry("tx");
         float x = (float) tx.getDouble(0d);
         return x;
       }
     
-    public float limeLightGetY() {
+    public static float limeLightGetY() {
         NetworkTableEntry ty = limeLightTable.getEntry("ty");
         float y = (float) ty.getDouble(0d);
         return y;
     }
     
-    public float limeLightGetL() {
+    public static float limeLightGetL() {
         NetworkTableEntry tl = limeLightTable.getEntry("tl");
         float l = (float) tl.getDouble(0d);
         return l;
     }
     
-    public float limeLightGetArea() {
+    public static float limeLightGetArea() {
         NetworkTableEntry ta = limeLightTable.getEntry("ta");
         float a = (float) ta.getDouble(0d);
         return a;
     }
     
-    public boolean limeLightTargetFound() {
+    public static boolean limeLightTargetFound() {
         NetworkTableEntry tv = limeLightTable.getEntry("tv");
         double v = tv.getDouble(0d);
         if (v == 0d) {
@@ -46,10 +46,9 @@ public class LimeLight {
         }
     }
     
-    public void limeLightSetPipeline(int pPipeline) {
+    public static void limeLightSetPipeline(int pPipeline) {
         if (pPipeline >= 0 && pPipeline <= 9) {
           limeLightTable.getEntry("pipeline").setValue(pPipeline);
-          System.out.println(limeLightTable.getEntry("pipeline").getDouble(0d));
         }
     }
 

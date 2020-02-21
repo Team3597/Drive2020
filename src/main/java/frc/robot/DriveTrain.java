@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -10,10 +9,10 @@ public class DriveTrain {
 
   private static DifferentialDrive driveTrain;
 
-  /*private static CANSparkMax rightDrive;
-  private static CANSparkMax leftDrive;*/
-  private static WPI_TalonSRX rightDrive;
-  private static WPI_TalonSRX leftDrive;
+  private static CANSparkMax frontRightDrive;
+  private static CANSparkMax frontLeftDrive;
+  private static CANSparkMax backRightDrive;
+  private static CANSparkMax backLeftDrive;
 
   private static float speed;
   private static final float DEFAULT_SPEED = 0.9f;
@@ -24,18 +23,22 @@ public class DriveTrain {
 
 public DriveTrain() {
 
-  /*rightDrive = new CANSparkMax(RobotMap.DRIVE_R_MOTOR_PORT, MotorType.kBrushless);
-  leftDrive = new CANSparkMax(RobotMap.DRIVE_L_MOTOR_PORT, MotorType.kBrushless);*/
-  rightDrive = new WPI_TalonSRX(RobotMap.DRIVE_R_MOTOR_PORT);
-  leftDrive = new WPI_TalonSRX(RobotMap.DRIVE_L_MOTOR_PORT);
+  frontRightDrive = new CANSparkMax(RobotMap.DRIVE_F_R_MOTOR_PORT, MotorType.kBrushless);
+  frontLeftDrive = new CANSparkMax(RobotMap.DRIVE_F_L_MOTOR_PORT, MotorType.kBrushless);
+  backRightDrive = new CANSparkMax(RobotMap.DRIVE_B_R_MOTOR_PORT, MotorType.kBrushless);
+  backLeftDrive = new CANSparkMax(RobotMap.DRIVE_B_L_MOTOR_PORT, MotorType.kBrushless);
 
-  //Add motor inverted
+  frontRightDrive.setInverted(RobotMap.DRIVE_F_R_MOTOR_INVERTED);
+  frontLeftDrive.setInverted(RobotMap.DRIVE_F_L_MOTOR_INVERTED);
+  backRightDrive.setInverted(RobotMap.DRIVE_B_R_MOTOR_INVERTED);
+  backLeftDrive.setInverted(RobotMap.DRIVE_B_L_MOTOR_INVERTED);
 
-  driveTrain = new DifferentialDrive(leftDrive, rightDrive);
-  
+  backRightDrive.follow(frontRightDrive);
+  backLeftDrive.follow(frontLeftDrive);
+
+  driveTrain = new DifferentialDrive(frontLeftDrive, frontRightDrive);
 
   drive = true;
-
   speed = DEFAULT_SPEED;
 }
 
@@ -65,7 +68,7 @@ public static void tankDriveWithJoystick() {
   }
 }
 
-public static void rocketLeagueDrive() {
+public static void driveWithTriggerButtons() {
   if(drive) {
     float forward = 0f;
 
@@ -86,9 +89,9 @@ public static void driveWithTriggers() {
     float forward = 0f;
 
     if(IO.buttonPressed(IO.driveJoystick) == IO.L_TRIGGER_BUTTON) {
-      forward = speed * (float)(IO.driveJoystick.getRawAxis(IO.L_TRIGGER_AXIS));
+      forward = -speed * (float)(IO.driveJoystick.getRawAxis(IO.L_TRIGGER_AXIS));
     } else if(IO.buttonPressed(IO.driveJoystick) == IO.R_TRIGGER_BUTTON) {
-      forward = -speed * (float)(IO.driveJoystick.getRawAxis(IO.R_TRIGGER_AXIS));
+      forward = speed * (float)(IO.driveJoystick.getRawAxis(IO.R_TRIGGER_AXIS));
     }
 
     float turn = (float) (IO.driveJoystick.getRawAxis(IO.LX_STICK_AXIS));

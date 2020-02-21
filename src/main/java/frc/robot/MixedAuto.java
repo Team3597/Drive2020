@@ -1,41 +1,33 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.Spark;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
 public class MixedAuto {
 
-  private static Spark wheelMotor = new Spark(RobotMap.WHEEL_MOTOR_PORT);
+  private static WPI_TalonFX wheelMotor = new WPI_TalonFX(RobotMap.WHEEL_MOTOR_PORT);
 
   private static AHRS ahrs = new AHRS(SerialPort.Port.kMXP);
 
   public static void align() {
+    LimeLight.limeLightSetPipeline(1);
   
-    float x = Robot.limeLight.limeLightGetX();
-    float a = Robot.limeLight.limeLightGetArea();
+    float x = LimeLight.limeLightGetX();
 
     float turn = 0f;
-    float drive = 0f;
               
-    if(Robot.limeLight.limeLightTargetFound()) {
+    if(LimeLight.limeLightTargetFound()) {
       DriveTrain.drive = false;
 
-      if(x <= -2f) {
-        turn = -0.5f;
-      } else if(x > 2f) {
-        turn = 0.5f;
-      } else {
-        if (a <= 2.3f) {
-          drive = -0.5f;
-        } else if (a > 3.3f) {
-          drive = 0.5f;
-        }
+      turn = Math.abs(x) / 200 + 0.2f;
+
+      if(x > 0.5f) {
+        DriveTrain.driveArcade(turn, 0f);
+      } else if (x < -2.5f ) {
+        DriveTrain.driveArcade(-turn, 0f);
       }
-
-      DriveTrain.driveArcade(turn, drive);
-
     }
   }
 
@@ -107,6 +99,7 @@ public class MixedAuto {
 
   public static void stop() {
     DriveTrain.drive = true;
+    LimeLight.limeLightSetPipeline(0);
   }
   
 }
