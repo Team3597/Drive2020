@@ -1,8 +1,11 @@
 package frc.robot;
 
+import javax.swing.Timer;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
+import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Spark;
 
@@ -14,27 +17,28 @@ public class Shooter {
     private static Spark leftHopper;
     private static Spark intake;
     private static WPI_TalonSRX intakeArm;
-    public static DigitalInput limitSwitch;
+    private static DigitalInput intakeEncoder;
     private static AnalogPotentiometer armPot;
 
     private static final float SHOOT_SPEED = 0.7f;
-    private static final float HOPPER_SPEED = 0.7f;
+    private static final float HOPPER_SPEED = 0.95f;
     private static final float INTAKE_SPEED = 0.7f;
     private static final float ARM_SPEED = 0.5f;
 
-    private static long warmupTime = 1 * 1000; //One second warmup (in milliseconds)
+    private static long warmupTime = 250; //One second warmup (in milliseconds) jk now it's short
     private static long shootTime = 3 * 1000; //Shoot for ten seconds
     public static boolean warmedUp = false;
+    public static boolean shiftedDown = false;
 
-    private static long loadTime = 2 * 1000; //Two seconds to load hopper
+    public static float shootSpeed = 0.5f;
 
-    public static float shootSpeed = 1f;
-
-    public static float potUp = 0.29f;
+    public static float potUp = 0.30f;
     public static float potDown = 0.52f;
 
-    public static boolean down =false;
+    public static boolean down = false;
     public static boolean atPosition = false;
+    //public static boolean shiftHopperDown = false;
+    public static int timesIndexed = 0;
 
     /* @TODO:
      * Give infinate loops timeouts
@@ -48,8 +52,8 @@ public class Shooter {
         intake = new Spark(RobotMap.SHOOTER_INTAKE_MOTOR_PORT);
         intakeArm = new WPI_TalonSRX(RobotMap.SHOOTER_INTAKE_ARM_MOTOR_PORT);
 
-        limitSwitch = new DigitalInput(RobotMap.SHOOTER_INTAKE_SWITCH_DIO_PORT);
         armPot = new AnalogPotentiometer(RobotMap.SHOOTER_INTAKE_ARM_POT_AI_PORT);
+        intakeEncoder = new DigitalInput(RobotMap.SHOOTER_INTAKE_ENCODER_DIO_PORT);
 
         rightShoot.setInverted(RobotMap.SHOOTER_R_MOTOR_INVERTED);
         leftShoot.setInverted(RobotMap.SHOOTER_L_MOTOR_INVERTED);
@@ -63,7 +67,20 @@ public class Shooter {
 
     public static void shoot() {
         while(true) {
-            if (warmedUp == false) { //If the shooter hasn't warmed up then warm up for warmupTime
+            if(shiftedDown == false) {
+                long start = System.currentTimeMillis();
+                long now = System.currentTimeMillis();
+                while (now - start < 250) {
+                    leftHopper.set(-HOPPER_SPEED);
+                    rightHopper.set(-HOPPER_SPEED);
+                    rightShoot.set(-SHOOT_SPEED);
+                    now = System.currentTimeMillis();
+                }
+                shiftedDown = true;
+                leftHopper.set(0);
+                rightHopper.set(0);
+                rightShoot.set(0);
+            } else if(warmedUp == false) { //If the shooter hasn't warmed up then warm up for warmupTime
                 long start = System.currentTimeMillis();
                 long now = System.currentTimeMillis();
                 while (now - start < warmupTime) {
@@ -76,10 +93,12 @@ public class Shooter {
                 long now = System.currentTimeMillis();
                 while (now - start < shootTime) {
                     setHopperMotors(HOPPER_SPEED);
-                    setShooterMotors(SHOOT_SPEED);
+                    setShooterMotors((float)(findShootSpeed()));
+                    // System.out.println(findShootSpeed());
                     now = System.currentTimeMillis();
                 }
                 warmedUp = false;
+                shiftedDown = false;
                 break;
             }
         }
@@ -90,10 +109,10 @@ public class Shooter {
         // final double a = -8.9396 * Math.pow(10d, -8d); a * Math.pow(distance, 4)
         final double b = 0.0000085;
         final double c = -0.00690642;
-        final double d = 1.84773;
-        final double f = -105.547;
+        final double d = 0.011108;
+        final double f = 58;
 
-        double speed = b * Math.pow(distance, 3) + c * Math.pow(distance, 2) + d * distance + f;
+        double speed = d * distance + f;
 
         return speed / 100;
     }
@@ -104,12 +123,21 @@ public class Shooter {
             atPosition = false;
             moveArm();
         }
-        if (limitSwitch.get() == true) { //If a ball isn't in then intake one
-        intake.set(INTAKE_SPEED);
-        setHopperMotors(0f);
+        if (intakeEncoder.get() == false) { //If a ball isn't in then intake one
+            intake.set(INTAKE_SPEED);
+            setHopperMotors(0f);
         } else { //If a ball is in then index it
             setHopperMotors(HOPPER_SPEED);
         }
+    }
+
+    public static void reverseIntake() {
+        // if(atPosition && !down){
+        //     down = true;
+        //     atPosition = false;
+        //     moveArm();
+        // }
+        intake.set(-INTAKE_SPEED);
     }
 
     public static void changeShooterSpeed(float pSpeedAdded) {
@@ -159,14 +187,52 @@ public class Shooter {
         }
     }
 
-    public static void stop() {
-        rightShoot.set(0f);
-        rightHopper.set(0f);
-        leftHopper.set(0f);
-        intake.set(0f);
+    public static void stopShooter() {
+        if(!down) {
+            rightShoot.set(0f);
+            rightHopper.set(0f);
+            leftHopper.set(0f);
+            intake.set(0f);
+        }
+    }
+
+    // public static void shiftHopper() {
+    //     if(shiftHopperDown) {
+    //         new java.util.Timer().schedule( 
+    //             new java.util.TimerTask() {
+    //                 @Override
+    //                 public void run() {
+    //                     setHopperMotors(0f);
+    //                     setShooterMotors(0f);
+    //                     shiftHopperDown = false;
+    //                 }
+    //             },
+    //             500 //Adjust
+    //         );
+    //         setHopperMotors(-HOPPER_SPEED);
+    //         setShooterMotors(-HOPPER_SPEED);
+    //     }
+    // }
+
+    public static void stopDriver() {
         if(atPosition){
             down = false;
             atPosition = false;
         }
+        // if(shiftHopperDown) {
+        //     new java.util.Timer().schedule( 
+        //         new java.util.TimerTask() {
+        //             @Override
+        //             public void run() {
+        //                 setHopperMotors(0f);
+        //                 setShooterMotors(0f);
+        //                 shiftHopperDown = false;
+        //             }
+        //         },
+        //         500 //Adjust
+        //     );
+        //     setHopperMotors(-HOPPER_SPEED);
+        //     setShooterMotors(-HOPPER_SPEED);
+        // }
     }
 }

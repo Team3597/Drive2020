@@ -20,8 +20,8 @@ public class RobotMap {
     public static final int SHOOTER_L_HOPPER_MOTOR_PORT = 1; //Spark
     public static final int SHOOTER_INTAKE_MOTOR_PORT = 0; //Spark
     public static final int SHOOTER_INTAKE_ARM_MOTOR_PORT = 2; //Talon
-    public static final int SHOOTER_INTAKE_SWITCH_DIO_PORT = 2;
     public static final int SHOOTER_INTAKE_ARM_POT_AI_PORT = 0;
+    public static final int SHOOTER_INTAKE_ENCODER_DIO_PORT = 9;
 
     public static final boolean SHOOTER_R_MOTOR_INVERTED = true;
     public static final boolean SHOOTER_L_MOTOR_INVERTED = true;
@@ -31,8 +31,8 @@ public class RobotMap {
     public static final boolean SHOOTER_INTAKE_ARM_MOTOR_INVERTED = false;
 
     //Climber
-    public static final int CLIMBER_L_MOTOR_PORT = 15; //Spark Max
-    public static final int CLIMBER_R_MOTOR_PORT = 16; //Spark Max
+    public static final int CLIMBER_T_MOTOR_PORT = 16; //Spark Max
+    public static final int CLIMBER_B_MOTOR_PORT = 15; //Spark Max
     
     //Color Wheel
     public static final int WHEEL_MOTOR_PORT = 1; //Talon

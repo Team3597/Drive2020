@@ -33,9 +33,28 @@ public class IO {
     public static Joystick driveJoystick;
     public static Joystick shootJoystick;
 
+    public static int buttonLayout = 0;
+    private static int buttonLayoutMax = 1;
+
     public IO() {
         driveJoystick = new Joystick(DRIVE_JOYSTICK_PORT);
         shootJoystick = new Joystick(SHOOT_JOYSTICK_PORT);
+    }
+
+    private static void changeLayoutForwards() {
+        if(buttonLayout == buttonLayoutMax) {
+            buttonLayout = 0;
+        } else {
+            buttonLayout++;
+        }
+    }
+
+    private static void changeLayoutBackwards() {
+        if(buttonLayout == 0) {
+            buttonLayout = buttonLayoutMax;
+        } else {
+            buttonLayout--;
+        }
     }
 
     public static int buttonPressed(Joystick pJoystick) {
@@ -74,10 +93,26 @@ public class IO {
     public static void driveButtonsPressed() {              //DRIVE CONTROLLER
         switch (buttonPressed(IO.driveJoystick)) {
             case A_BUTTON:
-                MixedAuto.align();
+                switch (buttonLayout) {
+                    default:
+                    case 0:
+                        
+                    break;
+                    case 1:
+                        MixedAuto.align();
+                    break;
+                }
                 break;
             case B_BUTTON:
-                Shooter.intake();
+                switch (buttonLayout) {
+                    default:
+                    case 0:
+                        
+                    break;
+                    case 1:
+                        Shooter.intake();
+                    break;
+                }
                 break;
             case X_BUTTON:
                 
@@ -89,39 +124,73 @@ public class IO {
 
                 break;
             case RB_BUTTON:
-                
+                switch (buttonLayout) {
+                    default:
+                    case 0:
+                        MixedAuto.align();
+                    break;
+                    case 1:
+                        
+                    break;
+                }
+                break;
+            case BACK_BUTTON:
+                // changeLayoutBackwards();
+                break;
+            case START_BUTTON:
+                // changeLayoutForwards();
                 break;
             default:
-                Shooter.stop();
-                MixedAuto.stop();
+                switch (buttonLayout) {
+                    default:
+                    case 0:
+                        MixedAuto.stopDriver();
+                    break;
+                    case 1:
+                        MixedAuto.stopDriver();
+                        Shooter.stopDriver();
+                    break;
+                }
+            break;
         }
     }
 
     public static void shootButtonsPressed() {              //SHOOT CONTROLLER
         switch (buttonPressed(IO.shootJoystick)) {
             case A_BUTTON:
-                // Shooter.setShooterMotors((float)(Shooter.findShootSpeed()));
-                // System.out.println(Shooter.findShootSpeed());
-                // Shooter.runHopperMotors();
                 Shooter.shoot();
                 break;
             case B_BUTTON:
-                Shooter.runHopperMotors();
+                switch (buttonLayout) {
+                    default:
+                    case 0:
+                        Shooter.intake();
+                    break;
+                    case 1:
+                        
+                    break;
+                }
                 break;
             case X_BUTTON:
-                Shooter.changeShooterSpeed(0.01f);
+                MixedAuto.rotateWheel("Blue");
+                // Shooter.changeShooterSpeed(-0.01f);
                 break;
             case Y_BUTTON:
-                Shooter.changeShooterSpeed(-0.01f);
+                MixedAuto.rotateWheel(5);
+                // Shooter.changeShooterSpeed(0.01f);
                 break;
             case LB_BUTTON:
-                System.out.println(Laser.getDistance());
+                // Shooter.shiftHopperDown = true;
+                // System.out.println(Laser.getDistance());
                 break;
             case RB_BUTTON:
-                System.out.println(Shooter.shootSpeed);
+                // System.out.println(Shooter.shootSpeed);
                 break;
             case R_TRIGGER_BUTTON:
-                
+                Climber.climbUp();
+                break;
+            case L_TRIGGER_BUTTON:
+                Climber.climbDown();
                 break;
             case L_STICK_BUTTON:
                 
@@ -130,15 +199,31 @@ public class IO {
                 
                 break;
             case BACK_BUTTON:
-                
+                //MixedAuto.wheelMotor.set(0.5f);
+                MixedAuto.resetWheel();
                 break;
             case START_BUTTON:
-                System.out.println(Shooter.getPot());
+                //System.out.println(Shooter.getPot());
+                Shooter.reverseIntake();
                 break;
             case PAD:
                 
                 break;
             default:
+                switch (buttonLayout) {
+                    default:
+                    case 0:
+                        Climber.stop();
+                        Shooter.stopShooter();
+                        MixedAuto.stopShooter();
+                        Shooter.stopDriver();
+                    break;
+                    case 1:
+                        Climber.stop();
+                        Shooter.stopShooter();
+                        MixedAuto.stopShooter();
+                    break;
+                }
           }
     }
 }

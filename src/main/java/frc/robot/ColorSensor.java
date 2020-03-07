@@ -44,8 +44,6 @@ public class ColorSensor {
         colorString = "Unknown";
       }
 
-      SmartDashboard.putString("Detected Color", colorString);
-
       return colorString;
     }
 }

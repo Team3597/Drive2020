@@ -15,8 +15,8 @@ public class DriveTrain {
   private static CANSparkMax backLeftDrive;
 
   private static float speed;
-  private static final float DEFAULT_SPEED = 0.9f;
-  private static final float SLOW_SPEED = 0.62f;
+  private static final float DEFAULT_SPEED = 0.7f;
+  private static final float SLOW_SPEED = 0.5f;
 
   public static boolean drive;
   private static boolean toggleSlowSpeed = true;
@@ -52,7 +52,7 @@ public static void driveTank(float pLeftSpeed, float pRightSpeed) {
 
 public static void arcadeDriveWithJoystick() {
   if(drive) {
-    float forward = (float) (IO.driveJoystick.getRawAxis(IO.RY_STICK_AXIS) * speed);
+    float forward = (float) (-IO.driveJoystick.getRawAxis(IO.RY_STICK_AXIS) * speed);
     float turn = (float) (IO.driveJoystick.getRawAxis(IO.LX_STICK_AXIS) * speed);
 
     driveArcade(turn, forward);
@@ -61,7 +61,7 @@ public static void arcadeDriveWithJoystick() {
 
 public static void tankDriveWithJoystick() {
   if(drive) {
-    float forward = (float) (IO.driveJoystick.getRawAxis(IO.LY_STICK_AXIS) * speed);
+    float forward = (float) (-IO.driveJoystick.getRawAxis(IO.LY_STICK_AXIS) * speed);
     float turn = (float) (IO.driveJoystick.getRawAxis(IO.RX_STICK_AXIS) * speed);
 
     driveTank(turn, forward);
@@ -86,18 +86,15 @@ public static void driveWithTriggerButtons() {
 
 public static void driveWithTriggers() {
   if (drive) {
-    float forward = 0f;
+    float forward = speed * (float)(IO.driveJoystick.getRawAxis(IO.R_TRIGGER_AXIS));
 
-    if(IO.buttonPressed(IO.driveJoystick) == IO.L_TRIGGER_BUTTON) {
+    if(forward < 0.1f) {
       forward = -speed * (float)(IO.driveJoystick.getRawAxis(IO.L_TRIGGER_AXIS));
-    } else if(IO.buttonPressed(IO.driveJoystick) == IO.R_TRIGGER_BUTTON) {
-      forward = speed * (float)(IO.driveJoystick.getRawAxis(IO.R_TRIGGER_AXIS));
     }
 
     float turn = (float) (IO.driveJoystick.getRawAxis(IO.LX_STICK_AXIS));
 
     driveArcade(turn, forward);
-
   }
 }
 
